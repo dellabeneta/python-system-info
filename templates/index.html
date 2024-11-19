@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Informações do Sistema</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <style>
+        .card {
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .progress {
+            height: 20px;
+        }
+        .system-time {
+            font-size: 0.9em;
+            color: #666;
+        }
+        .card-header {
+            background-color: #f8f9fa;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body class="bg-light">
+    <div class="container py-4">
+        <h1 class="text-center mb-4">Informações do Sistema</h1>
+        <p class="text-center system-time">Última atualização: {{ current_time }}</p>
+
+        <!-- Sistema Operacional -->
+        <div class="card">
+            <div class="card-header">
+                <i class="fa fa-desktop"></i> Sistema Operacional
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong>Sistema:</strong> {{ info.system.os }}</p>
+                        <p><strong>Versão:</strong> {{ info.system.os_version }}</p>
+                        <p><strong>Release:</strong> {{ info.system.os_release }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Arquitetura:</strong> {{ info.system.architecture }}</p>
+                        <p><strong>Hostname:</strong> {{ info.system.hostname }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CPU -->
+        <div class="card">
+            <div class="card-header">
+                <i class="fa fa-microchip"></i> Processador
+            </div>
+            <div class="card-body">
+                <p><strong>Modelo:</strong> {{ info.cpu.brand }}</p>
+                <p><strong>Núcleos Físicos:</strong> {{ info.cpu.cores_physical }}</p>
+                <p><strong>Núcleos Totais:</strong> {{ info.cpu.cores_total }}</p>
+                <p><strong>Frequência Atual:</strong> {{ info.cpu.freq_current }}</p>
+                <p><strong>Frequência Máxima:</strong> {{ info.cpu.freq_max }}</p>
+                <p><strong>Uso CPU:</strong></p>
+                <div class="progress">
+                    <div class="progress-bar" role="progressbar" 
+                         style="width: {{ info.cpu.usage_percent }}%"
+                         aria-valuenow="{{ info.cpu.usage_percent }}" 
+                         aria-valuemin="0" aria-valuemax="100">
+                        {{ info.cpu.usage_percent }}%
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Memória -->
+        <div class="card">
+            <div class="card-header">
+                <i class="fa fa-memory"></i> Memória
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong>Total:</strong> {{ info.memory.total }}</p>
+                        <p><strong>Disponível:</strong> {{ info.memory.available }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Em Uso:</strong> {{ info.memory.used }}</p>
+                    </div>
+                </div>
+                <p><strong>Uso Memória:</strong></p>
+                <div class="progress">
+                    <div class="progress-bar" role="progressbar" 
+                         style="width: {{ info.memory.percent }}%"
+                         aria-valuenow="{{ info.memory.percent }}" 
+                         aria-valuemin="0" aria-valuemax="100">
+                        {{ info.memory.percent }}%
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Disco -->
+        <div class="card">
+            <div class="card-header">
+                <i class="fa fa-hdd-o"></i> Disco
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong>Total:</strong> {{ info.disk.total }}</p>
+                        <p><strong>Usado:</strong> {{ info.disk.used }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Livre:</strong> {{ info.disk.free }}</p>
+                    </div>
+                </div>
+                <p><strong>Uso Disco:</strong></p>
+                <div class="progress">
+                    <div class="progress-bar" role="progressbar" 
+                         style="width: {{ info.disk.percent }}%"
+                         aria-valuenow="{{ info.disk.percent }}" 
+                         aria-valuemin="0" aria-valuemax="100">
+                        {{ info.disk.percent }}%
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Atualiza a página a cada 10 segundos
+        setTimeout(function() {
+            location.reload();
+        }, 10000);
+    </script>
+</body>
+</html>
