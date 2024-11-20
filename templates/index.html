@@ -7,52 +7,168 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
     <style>
+        body {
+            background-color: #f8f9fa;
+        }
+
+        .main-title {
+            color: #2c3e50;
+            font-weight: 600;
+            margin-bottom: 0.2rem;
+            padding: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-size: 1.8rem;
+        }
+
+        .main-title i {
+            color: #3498db;
+            margin-right: 10px;
+        }
+
         .card {
             margin-bottom: 20px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
             transition: all 0.3s ease;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            border-radius: 8px;
         }
+
+        .card:hover {
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Sistema */
+        #sistema .card-header {
+            background-color: #3498db;
+            color: white;
+        }
+        #sistema .progress-bar {
+            background-color: #3498db;
+        }
+        #sistema strong {
+            color: #2980b9;
+        }
+
+        /* CPU */
+        #cpu .card-header {
+            background-color: #ff7675;
+            color: white;
+        }
+        #cpu .progress-bar {
+            background-color: #ff7675;
+        }
+        #cpu strong {
+            color: #e17055;
+        }
+
+        /* Memória */
+        #memoria .card-header {
+            background-color: #20bf6b;
+            color: white;
+        }
+        #memoria .progress-bar {
+            background-color: #20bf6b;
+        }
+        #memoria strong {
+            color: #0b8a4b;
+        }
+
+        /* Disco */
+        #disco .card-header {
+            background-color: #9b59b6;
+            color: white;
+        }
+        #disco .progress-bar {
+            background-color: #9b59b6;
+        }
+        #disco strong {
+            color: #8e44ad;
+        }
+
+        /* Processos */
+        #processos .card-header {
+            background-color: #576574;
+            color: white;
+        }
+        #processos .progress-bar {
+            background-color: #576574;
+        }
+        #processos strong {
+            color: #2f3542;
+        }
+
+        .card-header {
+            font-weight: 500;
+            border-bottom: none;
+            border-radius: 8px 8px 0 0;
+        }
+
+        .card-header i {
+            margin-right: 8px;
+            opacity: 0.9;
+        }
+
         .progress {
             height: 10px;
             margin-top: 10px;
+            background-color: #edf2f7;
+            border-radius: 6px;
         }
-        .card-header {
-            background-color: #f8f9fa;
-            font-weight: bold;
-        }
-        .update-transition {
-            transition: all 0.5s ease-in-out;
-        }
+
         .progress-bar {
             transition: width 0.5s ease-in-out;
         }
+
         .table {
             margin-bottom: 0;
         }
+
         .table th {
             border-top: none;
             font-weight: 600;
+            color: #2c3e50;
         }
+
         .table td, .table th {
             padding: 0.5rem;
             vertical-align: middle;
         }
+
         .table-hover tbody tr:hover {
-            background-color: rgba(0,0,0,0.075);
+            background-color: rgba(0, 0, 0, 0.03);
             transition: background-color 0.2s ease;
         }
+
         .update-transition {
             transition: all 0.3s ease-in-out;
+        }
+
+        .app-metrics {
+            margin-bottom: 2rem !important;
+        }
+
+        .system-time {
+            margin-bottom: 1.5rem;
+            color: #666;
         }
     </style>
 </head>
 <body class="bg-light">
     <div class="container py-4">
-        <h1 class="text-center mb-4">Informações do Sistema</h1>
-        <p class="text-center system-time">Última atualização: <span id="current-time"></span></p>
+        <h1 class="text-center main-title">
+            <i class="fas fa-desktop"></i>
+            Informações do Sistema
+        </h1>
+        <p class="text-center text-muted app-metrics">
+            <small>(Consumo desta aplicação - CPU: <span id="app-cpu">0%</span>, RAM: <span id="app-memory">0 MB</span>)</small>
+        </p>
+        <p class="text-center system-time">
+            <small><strong>Última atualização:</strong> <span id="current-time"></span></small>
+        </p>
 
         <!-- Sistema Operacional -->
-        <div class="card">
+        <div id="sistema" class="card">
             <div class="card-header">
                 <i class="fas fa-laptop"></i> Sistema
             </div>
@@ -75,7 +191,7 @@
         </div>
 
         <!-- CPU -->
-        <div class="card">
+        <div id="cpu" class="card">
             <div class="card-header">
                 <i class="fas fa-microchip"></i> CPU
             </div>
@@ -97,7 +213,7 @@
         </div>
 
         <!-- Memória -->
-        <div class="card">
+        <div id="memoria" class="card">
             <div class="card-header">
                 <i class="fas fa-memory"></i> Memória
             </div>
@@ -123,7 +239,7 @@
         </div>
 
         <!-- Disco -->
-        <div class="card">
+        <div id="disco" class="card">
             <div class="card-header">
                 <i class="fas fa-hard-drive"></i> Disco
             </div>
@@ -149,7 +265,7 @@
         </div>
 
         <!-- Top Processos -->
-        <div class="card">
+        <div id="processos" class="card">
             <div class="card-header">
                 <i class="fas fa-list"></i> Top 10 Processos
             </div>
@@ -254,6 +370,10 @@
             
             // Atualiza o horário
             updateElement('current-time', data.current_time);
+            
+            // Atualiza as métricas da aplicação
+            document.getElementById('app-cpu').textContent = data.app_metrics.cpu;
+            document.getElementById('app-memory').textContent = data.app_metrics.memory;
         };
 
         // Tratamento de erros de conexão

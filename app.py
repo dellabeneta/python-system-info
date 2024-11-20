@@ -189,6 +189,70 @@ def format_version(version):
     
     return version
 
+# Cache para informações estáticas
+_static_info = None
+_process = None
+
+def get_static_system_info():
+    """
+    Retorna informações do sistema que não mudam frequentemente
+    """
+    global _static_info
+    if _static_info is None:
+        system_info = get_system_info()
+        internal_ip, external_ip = get_ip_addresses()
+        _static_info = {
+            'os': system_info['system']['os'],
+            'distro': system_info['system']['os_version'],
+            'kernel': system_info['system']['os_release'],
+            'architecture': system_info['system']['architecture'],
+            'hostname': system_info['system']['hostname'],
+            'desktop': get_desktop_environment(),
+            'internal_ip': internal_ip,
+            'external_ip': external_ip
+        }
+    return _static_info
+
+def get_dynamic_metrics():
+    """
+    Retorna métricas que mudam frequentemente
+    """
+    system_info = get_system_info()
+    return {
+        'cpu': system_info['cpu'],
+        'memory': system_info['memory'],
+        'disk': system_info['disk'],
+        'processes': get_top_processes()
+    }
+
+def get_app_metrics():
+    """
+    Retorna o consumo de CPU e RAM da própria aplicação
+    """
+    global _process
+    
+    # Inicializa o processo se ainda não existe
+    if _process is None:
+        _process = psutil.Process(os.getpid())
+        # Primeira chamada para inicializar a medição de CPU
+        _process.cpu_percent()
+        
+    # Obtém as métricas atuais
+    try:
+        cpu_percent = _process.cpu_percent()
+        memory_info = _process.memory_info()
+        return {
+            'cpu': f"{cpu_percent:.1f}%",
+            'memory': get_size(memory_info.rss)
+        }
+    except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.TimeoutExpired):
+        # Em caso de erro, reinicializa o processo
+        _process = None
+        return {
+            'cpu': "0.0%",
+            'memory': "0 B"
+        }
+
 @app.route('/')
 def index():
     return render_template('index.html')
@@ -196,53 +260,29 @@ def index():
 @app.route('/events')
 def events():
     def generate():
+        # Obtém informações estáticas uma única vez
+        static_info = get_static_system_info()
+        
         while True:
-            # Obtém os IPs
-            internal_ip, external_ip = get_ip_addresses()
+            # Obtém apenas métricas dinâmicas
+            dynamic_metrics = get_dynamic_metrics()
             
-            # Coleta as informações do sistema
-            info = {
-                'system': {
-                    'os': platform.system().lower(),
-                    'distro': get_distro_info(),
-                    'desktop': get_desktop_environment(),
-                    'kernel': platform.release(),
-                    'architecture': get_architecture(),
-                    'hostname': platform.node(),
-                    'internal_ip': internal_ip,
-                    'external_ip': external_ip
-                },
-                'cpu': {
-                    'brand': platform.processor(),
-                    'cores_physical': psutil.cpu_count(logical=False),
-                    'cores_total': psutil.cpu_count(logical=True),
-                    'freq_current': f"{psutil.cpu_freq().current:.2f}MHz" if psutil.cpu_freq() else "N/A",
-                    'freq_max': f"{psutil.cpu_freq().max:.2f}MHz" if psutil.cpu_freq() else "N/A",
-                    'usage_percent': psutil.cpu_percent(interval=1)
-                },
-                'memory': {
-                    'total': get_size(psutil.virtual_memory().total),
-                    'available': get_size(psutil.virtual_memory().available),
-                    'used': get_size(psutil.virtual_memory().used),
-                    'percent': psutil.virtual_memory().percent
-                },
-                'disk': {
-                    'total': get_size(psutil.disk_usage('/').total),
-                    'used': get_size(psutil.disk_usage('/').used),
-                    'free': get_size(psutil.disk_usage('/').free),
-                    'percent': psutil.disk_usage('/').percent
-                },
-                'processes': get_top_processes(),
-                'current_time': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            # Obtém métricas da própria aplicação
+            app_metrics = get_app_metrics()
+            
+            data = {
+                'current_time': datetime.now().strftime('%H:%M:%S'),
+                'system': static_info,
+                'cpu': dynamic_metrics['cpu'],
+                'memory': dynamic_metrics['memory'],
+                'disk': dynamic_metrics['disk'],
+                'processes': dynamic_metrics['processes'],
+                'app_metrics': app_metrics
             }
             
-            # Envia os dados como evento SSE
-            data = f"data: {json.dumps(info)}\n\n"
-            yield data
-            
-            # Aguarda 2 segundos antes da próxima atualização
-            time.sleep(2)
-
+            yield f"data: {json.dumps(data)}\n\n"
+            time.sleep(3)  # Aumenta o intervalo para 3 segundos
+    
     return Response(generate(), mimetype='text/event-stream')
 
 if __name__ == '__main__':
