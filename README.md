@@ -46,6 +46,14 @@ A página será atualizada automaticamente a cada 30 segundos para mostrar as in
 - Suporte a múltiplos sistemas operacionais
 - Design intuitivo com ícones e barras de progresso
 
+## Screenshots
+
+### Modo Light
+![Dashboard Light Mode](screenshots/dashboard_light.png)
+
+### Modo Dark
+![Dashboard Dark Mode](screenshots/dashboard_dark.png)
+
 ## Notas
 
 - Algumas informações podem não estar disponíveis em todos os sistemas operacionais
