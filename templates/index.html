@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-BR" data-bs-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -152,9 +152,85 @@
             margin-bottom: 1.5rem;
             color: #666;
         }
+
+        /* Dark mode specific styles */
+        [data-bs-theme="dark"] body {
+            background-color: #212529;
+        }
+
+        [data-bs-theme="dark"] .main-title {
+            color: #f8f9fa;
+        }
+
+        [data-bs-theme="dark"] .card {
+            background-color: #2c3034;
+            border-color: #373b3e;
+        }
+
+        /* Theme button styles */
+        .theme-button {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            z-index: 1000;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 50%;
+            width: 45px;
+            height: 45px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            background-color: var(--bs-body-bg);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .theme-button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+
+        .theme-button .fa-sun {
+            color: #ffd700;
+        }
+
+        .theme-button .fa-moon {
+            color: #6c757d;
+        }
+
+        [data-bs-theme="dark"] .theme-button {
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+        }
+
+        [data-bs-theme="dark"] .theme-button:hover {
+            box-shadow: 0 4px 8px rgba(0,0,0,0.4);
+        }
+
+        /* Animação de rotação para o ícone */
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .theme-button i {
+            transition: all 0.3s ease;
+        }
+
+        .theme-button:active i {
+            animation: rotate 0.5s ease-in-out;
+        }
     </style>
 </head>
-<body class="bg-light">
+<body>
+    <!-- Theme Button -->
+    <button class="theme-button" id="themeButton" title="Alternar tema">
+        <i class="fas fa-sun"></i>
+    </button>
+
     <div class="container py-4">
         <h1 class="text-center main-title">
             <i class="fas fa-desktop"></i>
@@ -380,6 +456,34 @@
         evtSource.onerror = function(err) {
             console.error("EventSource failed:", err);
         };
+
+        // Theme switching functionality
+        const themeButton = document.getElementById('themeButton');
+        const html = document.documentElement;
+        const icon = themeButton.querySelector('i');
+
+        // Function to update theme icon
+        function updateThemeIcon(isDark) {
+            // Mostra sol no modo escuro (para voltar ao claro) e lua no modo claro (para ir ao escuro)
+            icon.className = isDark ? 'fas fa-sun' : 'fas fa-moon';
+        }
+
+        // Check for saved theme preference
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme) {
+            html.setAttribute('data-bs-theme', savedTheme);
+            updateThemeIcon(savedTheme === 'dark');
+        }
+
+        // Theme button event listener
+        themeButton.addEventListener('click', function() {
+            const currentTheme = html.getAttribute('data-bs-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            
+            html.setAttribute('data-bs-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            updateThemeIcon(newTheme === 'dark');
+        });
     </script>
 </body>
 </html>
