@@ -1,5 +1,7 @@
 # Monitor de Sistema Web
 
+<img src="https://drive.google.com/uc?export=view&id=1cVJGIzukEyYqyNr9NerI-uFp52B35PQr" width="1000">
+
 Uma aplicação web em Python que mostra informações detalhadas do sistema, incluindo:
 - Informações do Sistema Operacional
 - Detalhes do Processador
